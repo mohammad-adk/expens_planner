@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -25,48 +26,22 @@ class TransactionList extends StatelessWidget {
           : ListView.builder(
               itemBuilder: (ctx, index) {
                 return Card(
-                    child: Row(
-                  children: <Widget>[
-                    Container(
-                      child: Text(
-                        "\$${transactions[index].amount.toStringAsFixed(2)}",
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                  elevation: 5,
+                  margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      child: FittedBox(
+                        child: Padding(
+                          padding: EdgeInsets.all(5),
+                          child: Text('\$${transactions[index].amount}'),
                         ),
                       ),
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          width: 2,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      padding: EdgeInsets.all(10),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          transactions[index].title,
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 16,
-                          ),
-                        ),
-                        Text(
-                          DateFormat.yMMMd().format(transactions[index].date),
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
-                        )
-                      ],
-                    )
-                  ],
-                ));
+                    title: Text(transactions[index].title,),
+                    subtitle: Text(DateFormat.yMMMd().format(transactions[index].date)),
+                  ),
+                );
               },
               itemCount: transactions.length,
             ),
