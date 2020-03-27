@@ -5,7 +5,9 @@ import './widgets/transaction_list.dart';
 import './widgets/new_transaction.dart';
 import './models/transaction.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -15,7 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'Personal Expenses',
       theme: ThemeData(
           primarySwatch: Colors.purple,
-          accentColor: Colors.amber,
+          accentColor: Colors.green,
           fontFamily: 'OpenSans'),
       home: MyHomePage(),
     );
@@ -40,7 +42,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
-  void _addNewTransaction(String txTitle, double txAmount, DateTime chosenDate) {
+  void _addNewTransaction(
+      String txTitle, double txAmount, DateTime chosenDate) {
     final newTx = Transaction(
       title: txTitle,
       amount: txAmount,
@@ -64,29 +67,74 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
-  void _deleteTx(String id){
+  void _deleteTx(String id) {
     setState(() {
-    _userTransactions.removeWhere((tx) => tx.id == id);
+      _userTransactions.removeWhere((tx) => tx.id == id);
     });
   }
 
+  bool _showChart = false;
+
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+    final _appBar = AppBar(
+      title: Text("Flutter App"),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () => _startAddNewTransaction(context),
+        )
+      ],
+    );
+
+    final txList = Container(
+      child: TransactionList(_userTransactions, _deleteTx),
+      height: (mediaQuery.size.height -
+              _appBar.preferredSize.height -
+              mediaQuery.padding.top) *
+          0.7,
+    );
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Flutter App"),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => _startAddNewTransaction(context),
-          )
-        ],
-      ),
+      appBar: _appBar,
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Chart(_recentTransactions),
-            TransactionList(_userTransactions, _deleteTx)
+            isLandscape
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text("Show chart"),
+                      Switch(
+                        value: _showChart,
+                        onChanged: (val) {
+                          setState(() {
+                            _showChart = val;
+                          });
+                        },
+                      )
+                    ],
+                  )
+                : Container(),
+            isLandscape
+                ? _showChart
+                    ? Container(
+                        child: Chart(_recentTransactions),
+                        height: (mediaQuery.size.height -
+                                _appBar.preferredSize.height -
+                                mediaQuery.padding.top) *
+                            0.6,
+                      )
+                    : txList
+                : Container(
+                    child: Chart(_recentTransactions),
+                    height: (mediaQuery.size.height -
+                            _appBar.preferredSize.height -
+                            mediaQuery.padding.top) *
+                        0.3,
+                  ),
+            !isLandscape ? txList : Container()
           ],
         ),
       ),
